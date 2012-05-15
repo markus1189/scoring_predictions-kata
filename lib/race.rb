@@ -1,35 +1,24 @@
-class Race
+module Race
+  module_function
 
-  def initialize guesses, actual
-    @guesses = guesses
-    @actual = actual
-  end
+  SCORES = [15,10,5,3,1]
+  MISPLACED = 1
 
-  def score
-    score_correct_positions + score_incorrect_positions
-  end
-
-  def score_correct_positions
-    @guesses.zip(@actual).map { |guess, actual|
-      guess == actual
-    }.zip(scores).inject(0) do |points, (correct, score)|
-      correct ? points + score : points
+  def score(guesses, actuals, scores=SCORES, misplaced=MISPLACED)
+    guesses.zip(actuals, scores).inject(0) do |result, (guess, actual, score)|
+      if guess == actual
+        result + score
+      elsif actuals.include? guess
+        result + misplaced
+      else
+        result
+      end
     end
-  end
-
-  def score_incorrect_positions
-    @guesses.zip(@actual).inject(0) do |points, (guess, actual)|
-      points += 1 if guess != actual && @actual.include?(guess)
-      points
-    end
-  end
-
-  def scores
-    [15,10,5,3,1]
-  end
-
-  def self.score(guesses, actual)
-    new(guesses, actual).score
   end
 
 end
+
+# after reading the practicing ruby issue:
+# http://practicingruby.com/articles/58
+# - module_function
+# - zip with more than one argument
